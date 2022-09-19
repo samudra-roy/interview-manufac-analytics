@@ -4,37 +4,31 @@ import WineData from "../Wine-Data.json"
 
 function BarChart() {
 
-    const alcoholArray = []
-    const malicAcidArray = []
-    const wine = []
+    const wineMap = new Map();
+    const wineCount = new Map();
 
-    //Adding alcohol categories in alcohol array
-    WineData.map((singleData) => {
-        if(!alcoholArray.includes(singleData.Alcohol)){
-        alcoholArray.push(singleData.Alcohol)
-        wine.push({"alcohol": singleData.Alcohol, "malicAcid":0, "count":0})
+    //Getting the wine data and count and storing them in respective maps
+    WineData.forEach((WineDataElement) => {
+        if(!wineMap.has(WineDataElement.Alcohol)){
+            wineMap.set(WineDataElement.Alcohol, WineDataElement['Malic Acid'])
+            wineCount.set(WineDataElement.Alcohol, 1)
+        }else{
+            const temp1 = wineMap.get(WineDataElement.Alcohol)
+            wineMap.set(WineDataElement.Alcohol, temp1 + WineDataElement['Malic Acid'])
+            wineCount.set(WineDataElement.Alcohol, wineCount.get(WineDataElement.Alcohol) + 1)
         }
     })
 
-    //Adding values in malicAcid array
-    WineData.map((WineDataElement) => {
-        alcoholArray.map((AlcoholElement) => {
-        if (WineDataElement.Alcohol === AlcoholElement){
-            wine[alcoholArray.indexOf(AlcoholElement)].malicAcid += WineDataElement['Malic Acid']
-            wine[alcoholArray.indexOf(AlcoholElement)].count++
-        }
-        })
-    })
-    wine.map((wineElement)=>{
-        const avg = wineElement.malicAcid / wineElement.count
-        malicAcidArray.push(avg)
+    //Calculating average
+    wineMap.forEach((value, key) => {
+        wineMap.set(key, wineMap.get(key) / wineCount.get(key))
     })
 
     const option = {
         xAxis: {
         type: 'category',
         name: 'Alcohol',
-        data: alcoholArray
+        data: [ ...wineMap.keys() ],
         },
         yAxis: {
         type: 'value',
@@ -42,7 +36,7 @@ function BarChart() {
         },
         series: [
         {
-            data: malicAcidArray,
+            data: [ ...wineMap.values() ],
             type: 'bar'
         }
         ]
