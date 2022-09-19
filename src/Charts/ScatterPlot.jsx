@@ -4,21 +4,18 @@ import WineData from "../Wine-Data.json"
 
 function ScatterPlot() {
 
-    const colorIntensityArray = []
-    const hueArray = []
     const finalArray = []
+    const dataMap = new Map();
 
-    // Adding data to colorIntensityArray and hueArray respectively
-    WineData.map(singleData => {
-        colorIntensityArray.push(Number(singleData['Color intensity']))
-        hueArray.push(singleData.Hue)
+    //Getting the wine data and storing them in a map
+    WineData.forEach(singleData => {
+        dataMap.set(Number(singleData['Color intensity']), singleData.Hue)
     })
 
-    // Adding the values from those two arrays to the final one
-    for(let i=0;i<hueArray.length;i++){
-        const tempArray = [colorIntensityArray[i], hueArray[i]]
-        finalArray.push(tempArray)
-    }
+    //Pushing the data from map to the final array
+    dataMap.forEach((value, key) =>{
+        finalArray.push([key, value])
+    })
     
     const option = {
         xAxis: {type: 'value', name: 'Color intensity'},
